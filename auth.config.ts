@@ -1,11 +1,15 @@
 import GitHub from "@auth/core/providers/github";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { PrismaClient } from "@prisma/client";
+import { buildAuthJSDB } from "./drizzle/client";
+import { DrizzleAdapter } from "@auth/drizzle-adapter";
 
-const prisma = new PrismaClient();
+const db = buildAuthJSDB({
+  TURSO_DB_URL: import.meta.env.TURSO_DB_URL,
+  TURSO_DB_AUTH_TOKEN: import.meta.env.TURSO_DB_AUTH_TOKEN,
+});
 
 export default {
-  adapter: PrismaAdapter(prisma),
+  // @ts-ignore
+  adapter: DrizzleAdapter(db),
   providers: [
     GitHub({
       clientId: import.meta.env.GITHUB_CLIENT_ID,
