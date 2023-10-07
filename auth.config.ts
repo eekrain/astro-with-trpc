@@ -1,15 +1,29 @@
 import GitHub from "@auth/core/providers/github";
-import { buildAuthJSDB } from "./drizzle/client";
-import { DrizzleAdapter } from "@auth/drizzle-adapter";
-
-const db = buildAuthJSDB({
-  TURSO_DB_URL: import.meta.env.TURSO_DB_URL,
-  TURSO_DB_AUTH_TOKEN: import.meta.env.TURSO_DB_AUTH_TOKEN,
-});
+import { MyDrizzleAdapter } from "./drizzle/adapter/authjs";
+import { db } from "./drizzle/migrate";
+import { schemaAuthJS } from "./drizzle/schema";
+import {
+  pGetSessionAndUser,
+  pGetSessionByToken,
+  pGetUserByAccount,
+  pGetUserByEmail,
+  pGetUserById,
+  pGetVerificationTokenByToken,
+} from "./drizzle/prepared";
 
 export default {
   // @ts-ignore
-  adapter: DrizzleAdapter(db),
+  adapter: MyDrizzleAdapter(db, {
+    schemas: schemaAuthJS,
+    prepared: {
+      getSessionAndUser: pGetSessionAndUser,
+      getSessionByToken: pGetSessionByToken,
+      getUserByAccount: pGetUserByAccount,
+      getUserByEmail: pGetUserByEmail,
+      getUserById: pGetUserById,
+      getVerificationTokenByToken: pGetVerificationTokenByToken,
+    },
+  }),
   providers: [
     GitHub({
       clientId: import.meta.env.GITHUB_CLIENT_ID,

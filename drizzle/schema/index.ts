@@ -1,6 +1,7 @@
-import { createTables as createAuthJSTables } from "./auth-js-schema";
 import { sqliteTable } from "drizzle-orm/sqlite-core";
+import { createAuthJSTables } from "./auth";
 
 export const { users, accounts, sessions, verificationTokens } =
   createAuthJSTables(sqliteTable);
-export const authJSSchema = { users, accounts, sessions, verificationTokens };
+
+export const schemaAuthJS = { users, accounts, sessions, verificationTokens };
