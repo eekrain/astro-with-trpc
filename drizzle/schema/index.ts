@@ -1,6 +1,6 @@
 import { sqliteTable } from "drizzle-orm/sqlite-core";
 import { createTables } from "../adapter/new";
-import { createClient } from "@libsql/client/.";
+import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
 
 export const { users, accounts, sessions, verificationTokens } =
