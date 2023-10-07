@@ -75,35 +75,33 @@ export function SQLiteDrizzleAdapter(
 
   return {
     async createUser(data) {
-      const registered = await client
-        .select()
-        .from(users)
-        .where(eq(users.email, data.email))
-        .get();
-      if (registered?.email) return registered;
-
       return client
         .insert(users)
         .values({ ...data, id: crypto.randomUUID() })
         .returning()
         .get();
     },
-    getUser(data) {
+    async getUser(data) {
       return (
-        client.select().from(users).where(eq(users.id, data)).get() ?? null
+        (await client.select().from(users).where(eq(users.id, data)).get()) ??
+        null
       );
     },
-    getUserByEmail(data) {
+    async getUserByEmail(data) {
       return (
-        client.select().from(users).where(eq(users.email, data)).get() ?? null
+        (await client
+          .select()
+          .from(users)
+          .where(eq(users.email, data))
+          .get()) ?? null
       );
     },
-    createSession(data) {
+    async createSession(data) {
       return client.insert(sessions).values(data).returning().get();
     },
-    getSessionAndUser(data) {
+    async getSessionAndUser(data) {
       return (
-        client
+        (await client
           .select({
             session: sessions,
             user: users,
@@ -111,10 +109,10 @@ export function SQLiteDrizzleAdapter(
           .from(sessions)
           .where(eq(sessions.sessionToken, data))
           .innerJoin(users, eq(users.id, sessions.userId))
-          .get() ?? null
+          .get()) ?? null
       );
     },
-    updateUser(data) {
+    async updateUser(data) {
       if (!data.id) {
         throw new Error("No user id.");
       }
@@ -126,7 +124,7 @@ export function SQLiteDrizzleAdapter(
         .returning()
         .get();
     },
-    updateSession(data) {
+    async updateSession(data) {
       return client
         .update(sessions)
         .set(data)
@@ -134,8 +132,8 @@ export function SQLiteDrizzleAdapter(
         .returning()
         .get();
     },
-    linkAccount(rawAccount) {
-      const updatedAccount = client
+    async linkAccount(rawAccount) {
+      const updatedAccount = await client
         .insert(accounts)
         .values(rawAccount)
         .returning()
@@ -155,8 +153,8 @@ export function SQLiteDrizzleAdapter(
 
       return account;
     },
-    getUserByAccount(account) {
-      const results = client
+    async getUserByAccount(account) {
+      const results = await client
         .select()
         .from(accounts)
         .leftJoin(users, eq(users.id, accounts.userId))
@@ -170,22 +168,22 @@ export function SQLiteDrizzleAdapter(
 
       return results?.user ?? null;
     },
-    deleteSession(sessionToken) {
+    async deleteSession(sessionToken) {
       return (
-        client
+        (await client
           .delete(sessions)
           .where(eq(sessions.sessionToken, sessionToken))
           .returning()
-          .get() ?? null
+          .get()) ?? null
       );
     },
-    createVerificationToken(token) {
+    async createVerificationToken(token) {
       return client.insert(verificationTokens).values(token).returning().get();
     },
-    useVerificationToken(token) {
+    async useVerificationToken(token) {
       try {
         return (
-          client
+          (await client
             .delete(verificationTokens)
             .where(
               and(
@@ -194,17 +192,17 @@ export function SQLiteDrizzleAdapter(
               )
             )
             .returning()
-            .get() ?? null
+            .get()) ?? null
         );
       } catch (err) {
         throw new Error("No verification token found.");
       }
     },
-    deleteUser(id) {
+    async deleteUser(id) {
       return client.delete(users).where(eq(users.id, id)).returning().get();
     },
-    unlinkAccount(account) {
-      client
+    async unlinkAccount(account) {
+      await client
         .delete(accounts)
         .where(
           and(
