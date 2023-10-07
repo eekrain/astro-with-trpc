@@ -2,7 +2,7 @@
 import { drizzle } from "drizzle-orm/libsql";
 
 import { schemaAuthJS } from "./schema/index";
-import { createClient } from "@libsql/client/.";
+import { createClient } from "@libsql/client";
 import "dotenv/config";
 
 const databaseURL = process.env["TURSO_DB_URL"];
