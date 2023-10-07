@@ -15,6 +15,13 @@
       "when": 1696638579187,
       "tag": "0001_condemned_orphan",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1696640184947,
+      "tag": "0002_good_ogun",
+      "breakpoints": true
     }
   ]
 }
